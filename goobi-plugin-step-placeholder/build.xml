@@ -1,0 +1,9 @@
+<project name="goobi-plugin-step-fileupload" default="devbuild">
+	<target name="devbuild">
+		<exec executable="mvn">
+			<arg value="package"/>
+		</exec>
+		<copy file="module-gui/target/plugin_intranda_step_placeholder-creation-GUI.jar" todir="/opt/digiverso/goobi/plugins/GUI/"/>
+		<copy file="module-main/target/plugin_intranda_step_placeholder-creation.jar" todir="/opt/digiverso/goobi/plugins/step/"/>
+	</target>
+</project>
