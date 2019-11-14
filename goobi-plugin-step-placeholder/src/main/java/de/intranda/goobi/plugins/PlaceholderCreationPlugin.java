@@ -1,5 +1,11 @@
 package de.intranda.goobi.plugins;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -8,6 +14,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
+import javax.imageio.ImageIO;
 
 import org.apache.commons.lang.StringUtils;
 import org.goobi.beans.Step;
@@ -16,6 +23,7 @@ import org.goobi.production.plugin.interfaces.AbstractStepPlugin;
 import org.goobi.production.plugin.interfaces.IPlugin;
 import org.goobi.production.plugin.interfaces.IStepPlugin;
 
+import de.sub.goobi.config.ConfigurationHelper;
 import de.sub.goobi.helper.Helper;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
@@ -42,25 +50,51 @@ public class PlaceholderCreationPlugin extends AbstractStepPlugin implements ISt
         super.myStep = step;
     }
 
-    public void createPlaceholderImages() {
-
+    public void createPlaceholderImages() throws IOException {
+        Path folder = null;
         try {
-            Path folder = Paths.get(myStep.getProzess().getImagesOrigDirectory(false));
+            folder = Paths.get(myStep.getProzess().getImagesOrigDirectory(false));
         } catch (IOException | InterruptedException | SwapException | DAOException e) {
             log.error(e);
             Helper.setFehlerMeldung("Cannot find image folder");
             return;
         }
+
+        ConfigurationHelper config = ConfigurationHelper.getInstance();
+        BufferedImage im = ImageIO.read(Paths.get(config.getGoobiFolder(), "xslt", "placeholder.png").toFile());
         int number = Integer.parseInt(numberOfPages);
-        for (int i = 1; i <=number; i++) {
+        for (int i = 1; i <= number; i++) {
             log.info("Create image " + i);
+            renderPageNumImage(i, im, folder);
         }
 
         if (number == 1) {
             Helper.setMeldung("Created 1 image.");
         } else {
-            Helper.setMeldung("Created "+  number + " images.");
+            Helper.setMeldung("Created " + number + " images.");
         }
+    }
+
+    private void renderPageNumImage(int i, BufferedImage im, Path folder) throws IOException {
+        String renderString = Integer.toString(i);
+        Graphics2D g2d = im.createGraphics();
+        g2d.setColor(new Color(0.231f, 0.518f, 0.773f));
+        g2d.fillRect(0, im.getHeight() - 401, im.getWidth() - 20, 400);
+        //g2d.setColor(new Color(0.702f, 0.702f, 0.702f));
+        g2d.setColor(Color.WHITE);
+        Font font = new Font("OpenSans", Font.PLAIN, 60);
+        g2d.setFont(font);
+        int width = g2d.getFontMetrics().stringWidth(renderString);
+        g2d.drawString(renderString, (im.getWidth() / 2) - (width / 2), im.getHeight() - 165);
+        g2d.dispose();
+        ImageIO.write(im, "PNG", folder.resolve(String.format("%08d.png", i)).toFile());
+    }
+
+    static BufferedImage deepCopy(BufferedImage bi) {
+        ColorModel cm = bi.getColorModel();
+        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+        WritableRaster raster = bi.copyData(null);
+        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
     }
 
     public void numericValidator(FacesContext context, UIComponent component, Object value) {
