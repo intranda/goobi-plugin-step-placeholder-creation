@@ -16,19 +16,21 @@
  * Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
  -->
-<ui:composition xmlns:p="http://primefaces.org/ui" 
-                xmlns="http://www.w3.org/1999/xhtml" 
-                xmlns:ui="http://java.sun.com/jsf/facelets" 
-                xmlns:composite="http://java.sun.com/jsf/composite"
-                xmlns:h="http://java.sun.com/jsf/html" 
-                xmlns:x="http://myfaces.apache.org/tomahawk" 
-                xmlns:f="http://java.sun.com/jsf/core" 
-                intranda="http://xmlns.jcp.org/jsf/composite/composites" 
-                xmlns:fn="http://java.sun.com/jsp/jstl/functions"       
-                >
+<ui:composition
+    xmlns:p="http://primefaces.org/ui"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:composite="http://java.sun.com/jsf/composite"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:x="http://myfaces.apache.org/tomahawk"
+    xmlns:f="http://java.sun.com/jsf/core"
+    intranda="http://xmlns.jcp.org/jsf/composite/composites"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
 
 
-    <h:form id="placeholder-creation" prependId="false">
+    <h:form
+        id="placeholder-creation"
+        prependId="false">
         <div class="box box-color lightgrey box-bordered">
 
             <div class="box-title">
@@ -39,42 +41,44 @@
             </div>
 
             <div class="box-content nopadding">
-                <h:panelGroup styleClass="padding-all-more">
 
-                    <div class="form-group">
-                        <div class="col-sm-3 control-label">
-                            <h:outputLabel
-                                for="numberOfImages"
-                                value="#{msgs.numberOfPages}" />
-                            <h:panelGroup>
-                                <i class="fa fa-asterisk pull-right font-asterisk" />
-                            </h:panelGroup>
+                <div class="row">
+                    <div class="col-sm-12" style="margin-top: 10px;">
+
+                        <div class="form-group">
+                            <div class="col-sm-3 control-label">
+                                <h:outputLabel
+                                    for="numberOfImages"
+                                    value="#{msgs.plugin_step_placeholder_numberOfPages}" />
+                                <h:panelGroup>
+                                    <i class="fa fa-asterisk pull-right font-asterisk" />
+                                </h:panelGroup>
+                            </div>
+                            <div class="col-sm-9">
+                                <x:inputText
+                                    id="numberOfImages"
+                                    forceId="true"
+                                    styleClass="form-control"
+                                    value="#{AktuelleSchritteForm.myPlugin.numberOfPages}"
+                                    validator="#{AktuelleSchritteForm.myPlugin.numericValidator}">
+                                </x:inputText>
+                                <h:message
+                                    for="numberOfImages"
+                                    showDetail="true"
+                                    styleClass="help-inline font-danger" />
+                            </div>
                         </div>
-                        <div class="col-sm-9">
-                            <x:inputText
-                                id="numberOfImages"
-                                forceId="true"
-                                styleClass="form-control"
-                                value="#{AktuelleSchritteForm.myPlugin.numberOfPages}"
-                                required="true"
-                                validator="#{AktuelleSchritteForm.myPlugin.numericValidator}">
-                            </x:inputText>
-                            <h:message
-                                for="numberOfImages"
-                                showDetail="true"
-                                styleClass="help-inline font-danger" />
+                        <div class="form-actions">
+                            <h:commandLink
+                                styleClass="btn btn-success submitOnEnter pull-right font-size-s margin-bottom-most "
+                                action="#{AktuelleSchritteForm.myPlugin.createPlaceholderImages}">
+                                <i class="fa fa-floppy-o margin-right-5"></i>
+                                <h:outputText value="#{msgs.plugin_step_placeholder_createPlaceholder}" />
+
+                            </h:commandLink>
                         </div>
                     </div>
-                    <div class="form-actions">
-                        <h:commandLink
-                            styleClass="btn btn-success submitOnEnter pull-right font-size-s margin-bottom-most"
-                            action="#{AktuelleSchritteForm.myPlugin.createPlaceholderImages}">
-                            <i class="fa fa-floppy-o margin-right-5"></i>
-                            <h:outputText value="#{msgs.plugin_step_placeholder_createPlaceholdert}" />
-
-                        </h:commandLink>
-                    </div>
-                </h:panelGroup>
+                </div>
 
             </div>
         </div>
