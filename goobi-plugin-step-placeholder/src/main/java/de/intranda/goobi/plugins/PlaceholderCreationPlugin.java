@@ -106,7 +106,6 @@ public class PlaceholderCreationPlugin extends AbstractStepPlugin implements ISt
             md.setValue(numberOfPages);
             logical.addMetadata(md);
 
-
             MetadataType MDTypeForPath = prefs.getMetadataTypeByName("pathimagefiles");
             if (physicaldocstruct == null) {
                 DocStructType dst = prefs.getDocStrctTypeByName("BoundBook");
@@ -154,7 +153,7 @@ public class PlaceholderCreationPlugin extends AbstractStepPlugin implements ISt
 
                 // identifier
                 Metadata identifier = new Metadata(identifierType);
-                identifier.setValue(myStep.getProzess().getTitel() + "_" +decimalFormat.format(currentPhysicalOrder));
+                identifier.setValue(myStep.getProzess().getTitel() + "_" + decimalFormat.format(currentPhysicalOrder));
                 dsPage.addMetadata(identifier);
 
                 // link image to main docstruct
@@ -168,7 +167,6 @@ public class PlaceholderCreationPlugin extends AbstractStepPlugin implements ISt
                     cf.setLocation("file://" + folder.toString() + "/" + filename);
                 }
                 dsPage.addContentFile(cf);
-
 
                 currentPhysicalOrder = currentPhysicalOrder + 1;
             }
@@ -199,7 +197,7 @@ public class PlaceholderCreationPlugin extends AbstractStepPlugin implements ISt
         int width = g2d.getFontMetrics().stringWidth(renderString);
         g2d.drawString(renderString, (im.getWidth() / 2) - (width / 2), im.getHeight() - 165);
         g2d.dispose();
-        ImageIO.write(im, "PNG", folder.resolve(String.format("%08d.png", i)).toFile());
+        ImageIO.write(im, "TIFF", folder.resolve(String.format("%08d.tif", i)).toFile());
     }
 
     static BufferedImage deepCopy(BufferedImage bi) {
