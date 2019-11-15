@@ -102,6 +102,11 @@ public class PlaceholderCreationPlugin extends AbstractStepPlugin implements ISt
                 }
             }
 
+            Metadata md = new Metadata(prefs.getMetadataTypeByName("NumberOfImages"));
+            md.setValue(numberOfPages);
+            logical.addMetadata(md);
+
+
             MetadataType MDTypeForPath = prefs.getMetadataTypeByName("pathimagefiles");
             if (physicaldocstruct == null) {
                 DocStructType dst = prefs.getDocStrctTypeByName("BoundBook");
