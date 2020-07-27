@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
@@ -18,14 +20,17 @@ import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.imageio.ImageIO;
 
+import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.goobi.beans.Step;
 import org.goobi.production.enums.PluginGuiType;
-import org.goobi.production.plugin.interfaces.AbstractStepPlugin;
-import org.goobi.production.plugin.interfaces.IPlugin;
-import org.goobi.production.plugin.interfaces.IStepPlugin;
+import org.goobi.production.enums.PluginReturnValue;
+import org.goobi.production.enums.PluginType;
+import org.goobi.production.enums.StepReturnValue;
+import org.goobi.production.plugin.interfaces.IStepPluginVersion2;
 
+import de.sub.goobi.config.ConfigPlugins;
 import de.sub.goobi.config.ConfigurationHelper;
 import de.sub.goobi.helper.Helper;
 import de.sub.goobi.helper.StorageProvider;
@@ -33,7 +38,7 @@ import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import ugh.dl.ContentFile;
 import ugh.dl.DigitalDocument;
@@ -51,11 +56,14 @@ import ugh.exceptions.TypeNotAllowedForParentException;
 import ugh.exceptions.WriteException;
 
 @PluginImplementation
-@Log4j
-public class PlaceholderCreationPlugin extends AbstractStepPlugin implements IStepPlugin, IPlugin {
+@Log4j2
+public class PlaceholderCreationPlugin implements IStepPluginVersion2 {
 
-    private static final String PLUGIN_NAME = "intranda_step_placeholder-creation";
-
+    @Getter
+    private String title = "intranda_step_placeholder-creation";
+    @Getter
+    private Step step;
+    private List<String> folders = null;
     @Getter
     @Setter
     private String numberOfPages;
@@ -64,20 +72,26 @@ public class PlaceholderCreationPlugin extends AbstractStepPlugin implements ISt
 
     @Override
     public void initialize(Step step, String returnPath) {
-        super.returnPath = returnPath;
-        super.myStep = step;
+        this.step = step;
+
+        // read parameters from correct block in configuration file
+        SubnodeConfiguration myconfig = ConfigPlugins.getProjectAndStepConfig(title, step);
+        folders = Arrays.asList(myconfig.getStringArray("folder"));
+        log.info("Placeholder generation plugin initialized");
     }
 
-    public void createPlaceholderImages() throws IOException {
-        Path folder = null;
-        try {
-            folder = Paths.get(myStep.getProzess().getImagesOrigDirectory(false));
-        } catch (IOException | InterruptedException | SwapException | DAOException e) {
-            log.error(e);
-            Helper.setFehlerMeldung("Cannot find image folder");
-            return;
+    public void createPlaceholderImages() throws IOException, InterruptedException, SwapException, DAOException {
+        for (String f : folders) {
+            String folder = step.getProzess().getConfiguredImageFolder(f);
+            Path path = Paths.get(folder);
+            if (!StorageProvider.getInstance().isFileExists(path)) {
+                StorageProvider.getInstance().createDirectories(path);
+            }
+            fillFolder(path);
         }
+    }
 
+    private void fillFolder(Path folder) throws IOException {
         ConfigurationHelper config = ConfigurationHelper.getInstance();
         BufferedImage im = ImageIO.read(Paths.get(config.getGoobiFolder(), "xslt", "placeholder.png").toFile());
         int number = Integer.parseInt(numberOfPages);
@@ -87,11 +101,10 @@ public class PlaceholderCreationPlugin extends AbstractStepPlugin implements ISt
         }
 
         try {
-
-            Prefs prefs = myStep.getProzess().getRegelsatz().getPreferences();
+            Prefs prefs = step.getProzess().getRegelsatz().getPreferences();
             DocStructType newPage = prefs.getDocStrctTypeByName("page");
             // read metadata
-            Fileformat ff = myStep.getProzess().readMetadataFile();
+            Fileformat ff = step.getProzess().readMetadataFile();
             DigitalDocument digitalDocument = ff.getDigitalDocument();
             // create pagination
             DocStruct physicaldocstruct = digitalDocument.getPhysicalDocStruct();
@@ -153,7 +166,7 @@ public class PlaceholderCreationPlugin extends AbstractStepPlugin implements ISt
 
                 // identifier
                 Metadata identifier = new Metadata(identifierType);
-                identifier.setValue(myStep.getProzess().getTitel() + "_" + decimalFormat.format(currentPhysicalOrder));
+                identifier.setValue(step.getProzess().getTitel() + "_" + decimalFormat.format(currentPhysicalOrder));
                 dsPage.addMetadata(identifier);
 
                 // link image to main docstruct
@@ -171,17 +184,17 @@ public class PlaceholderCreationPlugin extends AbstractStepPlugin implements ISt
                 currentPhysicalOrder = currentPhysicalOrder + 1;
             }
 
-            myStep.getProzess().writeMetadataFile(ff);
-        } catch (ReadException | PreferencesException | WriteException | InterruptedException | SwapException | DAOException
-                | TypeNotAllowedForParentException | TypeNotAllowedAsChildException | MetadataTypeNotAllowedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            step.getProzess().writeMetadataFile(ff);
+        } catch (ReadException | PreferencesException | WriteException | InterruptedException | SwapException
+                | DAOException | TypeNotAllowedForParentException | TypeNotAllowedAsChildException
+                | MetadataTypeNotAllowedException e) {
+            log.error(e);
         }
 
         if (number == 1) {
-            Helper.setMeldung("Created 1 image.");
+            Helper.setMeldung("Created 1 image in folder " + folder.toString());
         } else {
-            Helper.setMeldung("Created " + number + " images.");
+            Helper.setMeldung("Created " + number + " images in folder " + folder.toString());
         }
     }
 
@@ -190,7 +203,7 @@ public class PlaceholderCreationPlugin extends AbstractStepPlugin implements ISt
         Graphics2D g2d = im.createGraphics();
         g2d.setColor(new Color(0.231f, 0.518f, 0.773f));
         g2d.fillRect(0, im.getHeight() - 401, im.getWidth() - 20, 400);
-        //g2d.setColor(new Color(0.702f, 0.702f, 0.702f));
+        // g2d.setColor(new Color(0.702f, 0.702f, 0.702f));
         g2d.setColor(Color.WHITE);
         Font font = new Font("OpenSans", Font.PLAIN, 60);
         g2d.setFont(font);
@@ -224,11 +237,13 @@ public class PlaceholderCreationPlugin extends AbstractStepPlugin implements ISt
                     int number = Integer.parseInt(data);
                     if (number == 0) {
                         valid = false;
-                        message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Missing data", "Enter a number higher than 0.");
+                        message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Missing data",
+                                "Enter a number higher than 0.");
                     }
                 } catch (Exception e) {
                     valid = false;
-                    message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Missing data", "Value cannot be parsed to a number");
+                    message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Missing data",
+                            "Value cannot be parsed to a number");
                 }
             }
         }
@@ -253,12 +268,32 @@ public class PlaceholderCreationPlugin extends AbstractStepPlugin implements ISt
     }
 
     @Override
-    public String getTitle() {
-        return PLUGIN_NAME;
+    public String cancel() {
+        return null;
     }
 
     @Override
-    public String getDescription() {
-        return PLUGIN_NAME;
+    public String finish() {
+        return null;
+    }
+
+    @Override
+    public HashMap<String, StepReturnValue> validate() {
+        return null;
+    }
+
+    @Override
+    public PluginType getType() {
+        return PluginType.Step;
+    }
+
+    @Override
+    public PluginReturnValue run() {
+        return null;
+    }
+
+    @Override
+    public int getInterfaceVersion() {
+        return 0;
     }
 }
