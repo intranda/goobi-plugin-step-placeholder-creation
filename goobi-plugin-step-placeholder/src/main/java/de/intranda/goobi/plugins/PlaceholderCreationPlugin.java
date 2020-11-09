@@ -64,6 +64,7 @@ public class PlaceholderCreationPlugin implements IStepPluginVersion2 {
     @Getter
     private Step step;
     private List<String> folders = null;
+    private boolean deleteExisting;
     @Getter
     @Setter
     private String numberOfPages;
@@ -77,6 +78,7 @@ public class PlaceholderCreationPlugin implements IStepPluginVersion2 {
         // read parameters from correct block in configuration file
         SubnodeConfiguration myconfig = ConfigPlugins.getProjectAndStepConfig(title, step);
         folders = Arrays.asList(myconfig.getStringArray("folder"));
+        deleteExisting = myconfig.getBoolean("deleteExisting", false);
         log.info("Placeholder generation plugin initialized");
     }
 
@@ -87,6 +89,10 @@ public class PlaceholderCreationPlugin implements IStepPluginVersion2 {
             if (!StorageProvider.getInstance().isFileExists(path)) {
                 StorageProvider.getInstance().createDirectories(path);
             }
+            if (deleteExisting) {
+                StorageProvider.getInstance().deleteDataInDir(path);
+            }
+
             fillFolder(path);
         }
     }

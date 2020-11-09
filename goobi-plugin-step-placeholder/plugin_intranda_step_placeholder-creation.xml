@@ -16,6 +16,9 @@
         <folder>master</folder>
         <folder>media</folder>
         
+        <!-- if the folder already exists and has images, delete the existing ones -->
+        <deleteExisting>false</deleteExisting>
+        
     </config>
 
 </config_plugin>
