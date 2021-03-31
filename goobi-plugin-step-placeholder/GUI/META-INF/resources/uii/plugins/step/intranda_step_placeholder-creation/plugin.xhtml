@@ -25,7 +25,8 @@
     xmlns:x="http://myfaces.apache.org/tomahawk"
     xmlns:f="http://java.sun.com/jsf/core"
     intranda="http://xmlns.jcp.org/jsf/composite/composites"
-    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:jsf="http://xmlns.jcp.org/jsf">
 
 
     <h:form styleClass="form-horizontal form-bordered" 
@@ -69,13 +70,13 @@
                             </div>
                         </div>
                         <div class="form-actions">
-                            <h:commandLink
-                                styleClass="btn btn-success submitOnEnter pull-right font-size-s margin-bottom-most "
-                                action="#{AktuelleSchritteForm.myPlugin.createPlaceholderImages}">
+                            <button
+                                class="btn btn-success submitOnEnter pull-right font-size-s margin-bottom-most "
+                                jsf:action="#{AktuelleSchritteForm.myPlugin.createPlaceholderImages}">
                                 <i class="fa fa-floppy-o margin-right-5"></i>
                                 <h:outputText value="#{msgs.plugin_step_placeholder_createPlaceholder}" />
 
-                            </h:commandLink>
+                            </button>
                         </div>
                     </div>
                 </div>
