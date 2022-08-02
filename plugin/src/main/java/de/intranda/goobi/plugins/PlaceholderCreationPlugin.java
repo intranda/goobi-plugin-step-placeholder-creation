@@ -191,9 +191,8 @@ public class PlaceholderCreationPlugin implements IStepPluginVersion2 {
             }
 
             step.getProzess().writeMetadataFile(ff);
-        } catch (ReadException | PreferencesException | WriteException | InterruptedException | SwapException
-                | DAOException | TypeNotAllowedForParentException | TypeNotAllowedAsChildException
-                | MetadataTypeNotAllowedException e) {
+        } catch (ReadException | PreferencesException | WriteException | SwapException | TypeNotAllowedForParentException
+                | TypeNotAllowedAsChildException | MetadataTypeNotAllowedException e) {
             log.error(e);
         }
 
@@ -243,13 +242,11 @@ public class PlaceholderCreationPlugin implements IStepPluginVersion2 {
                     int number = Integer.parseInt(data);
                     if (number == 0) {
                         valid = false;
-                        message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Missing data",
-                                "Enter a number higher than 0.");
+                        message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Missing data", "Enter a number higher than 0.");
                     }
                 } catch (Exception e) {
                     valid = false;
-                    message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Missing data",
-                            "Value cannot be parsed to a number");
+                    message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Missing data", "Value cannot be parsed to a number");
                 }
             }
         }
