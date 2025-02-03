@@ -22,7 +22,6 @@
  xmlns:ui="http://java.sun.com/jsf/facelets"
  xmlns:composite="http://java.sun.com/jsf/composite"
  xmlns:h="http://java.sun.com/jsf/html"
- xmlns:x="http://myfaces.apache.org/tomahawk"
  xmlns:f="http://java.sun.com/jsf/core"
  xmlns:intranda="http://xmlns.jcp.org/jsf/composite/compositesPG"
  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
@@ -46,13 +45,13 @@
                      labelRequired="true" />
              </div>
              <div class="col-12 col-md-9">
-                 <x:inputText
+                 <h:inputText
                      id="numberOfImages"
                      forceId="true"
                      styleClass="form-control"
                      value="#{AktuelleSchritteForm.myPlugin.numberOfPages}"
                      validator="#{AktuelleSchritteForm.myPlugin.numericValidator}">
-                 </x:inputText>
+                 </h:inputText>
                  <h:message
                      for="numberOfImages"
                      showDetail="true"
