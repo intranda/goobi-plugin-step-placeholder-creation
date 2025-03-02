@@ -14,10 +14,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.validator.ValidatorException;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.configuration.SubnodeConfiguration;
@@ -36,6 +32,10 @@ import de.sub.goobi.helper.Helper;
 import de.sub.goobi.helper.StorageProvider;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.validator.ValidatorException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -233,21 +233,19 @@ public class PlaceholderCreationPlugin implements IStepPluginVersion2 {
         if (StringUtils.isBlank(data)) {
             valid = false;
             message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Missing data", "Field is empty.");
+        } else if (!StringUtils.containsOnly(data, numbers)) {
+            valid = false;
+            message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Missing data", "Only numbers are allowed");
         } else {
-            if (!StringUtils.containsOnly(data, numbers)) {
-                valid = false;
-                message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Missing data", "Only numbers are allowed");
-            } else {
-                try {
-                    int number = Integer.parseInt(data);
-                    if (number == 0) {
-                        valid = false;
-                        message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Missing data", "Enter a number higher than 0.");
-                    }
-                } catch (Exception e) {
+            try {
+                int number = Integer.parseInt(data);
+                if (number == 0) {
                     valid = false;
-                    message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Missing data", "Value cannot be parsed to a number");
+                    message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Missing data", "Enter a number higher than 0.");
                 }
+            } catch (Exception e) {
+                valid = false;
+                message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Missing data", "Value cannot be parsed to a number");
             }
         }
         if (!valid) {
