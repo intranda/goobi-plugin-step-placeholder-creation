@@ -59,6 +59,7 @@ import ugh.exceptions.WriteException;
 @Log4j2
 public class PlaceholderCreationPlugin implements IStepPluginVersion2 {
 
+    private static final long serialVersionUID = 5825472731401380444L;
     @Getter
     private String title = "intranda_step_placeholder-creation";
     @Getter
@@ -150,7 +151,7 @@ public class PlaceholderCreationPlugin implements IStepPluginVersion2 {
             List<String> filenames = StorageProvider.getInstance().list(folder.toString());
             MetadataType physicalType = prefs.getMetadataTypeByName("physPageNumber");
             MetadataType logicalType = prefs.getMetadataTypeByName("logicalPageNumber");
-            MetadataType identifierType = prefs.getMetadataTypeByName("ImageIdentifier");
+            MetadataType identifierType = prefs.getMetadataTypeByName("_ImageIdentifier");
 
             DecimalFormat decimalFormat = new DecimalFormat("####");
 
