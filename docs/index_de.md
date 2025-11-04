@@ -3,6 +3,10 @@ title: Generierung von Platzhalterbildern
 identifier: intranda_step_placeholder-creation
 published: true
 description: Dieses Step Plugin für Goobi workflow dient zur Erzeugung einer definierten Anzahl von Platzhalterbildern innerhalb des Master-Ordners.
+keywords:
+    - Goobi workflow
+    - Plugin
+    - Step Plugin
 ---
 ## Einführung
 Dieses Plugin dient zur Generierung von Platzhalterbildern innerhalb des Master-Ordners eines Vorgangs von Goobi workflow. Die Anzahl der zu generierenden Bilder ist hierbei innerhalb der Nutzeroberfläche definierbar.

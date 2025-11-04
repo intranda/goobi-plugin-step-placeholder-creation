@@ -3,6 +3,10 @@ title: Generation of placeholder images
 identifier: intranda_step_placeholder-creation
 published: true
 description: This step plugin for Goobi workflow is used to create a defined number of placeholder images within the master folder.
+keywords:
+    - Goobi workflow
+    - Plugin
+    - Step Plugin
 ---
 ## Introduction
 This plugin is used to generate placeholder images within the master folder of a Goobi workflow process. The number of images to be generated can be defined in the user interface.
