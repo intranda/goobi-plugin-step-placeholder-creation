@@ -17,15 +17,16 @@
  *
  -->
  <ui:composition
- xmlns:p="http://primefaces.org/ui"
- xmlns="http://www.w3.org/1999/xhtml"
- xmlns:ui="http://java.sun.com/jsf/facelets"
- xmlns:composite="http://java.sun.com/jsf/composite"
- xmlns:h="http://java.sun.com/jsf/html"
- xmlns:f="http://java.sun.com/jsf/core"
- xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites"
- xmlns:fn="http://java.sun.com/jsp/jstl/functions"
- xmlns:jsf="http://xmlns.jcp.org/jsf">
+    xmlns:p="http://primefaces.org/ui"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:composite="http://java.sun.com/jsf/composite"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:util="http://goobi.io/util"
+    xmlns:jsf="http://xmlns.jcp.org/jsf">
 
 
  <h:form styleClass="form-horizontal form-bordered"
@@ -35,7 +36,7 @@
          boxForm="true"
          boxType="neutral"
          boxPadding="false"
-         icon="fa-upload"
+         icon="upload"
          title="#{msgs.plugin_step_placeholder_createPlaceholder}">
          <div class="row">
              <div class="col-12 col-md-3">
@@ -62,7 +63,7 @@
              <button
                  class="btn btn-success submitOnEnter"
                  jsf:action="#{AktuelleSchritteForm.myPlugin.createPlaceholderImages}">
-                 <span class="fa fa-floppy-o" />
+                 <util:icon icon="device-floppy" />
                  <span>
                      <h:outputText value="#{msgs.plugin_step_placeholder_createPlaceholder}" />
                  </span>
